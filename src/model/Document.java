@@ -20,43 +20,32 @@ public class Document {
 
   public Document(int studentId, String docType, LocalDate issueDate,
                   LocalDate expiryDate, String issuingAuthority, String notes) {
-    this.studentId        = studentId;
-    this.docType          = docType;
-    this.issueDate        = issueDate;
-    this.expiryDate       = expiryDate;
-    this.issuingAuthority = issuingAuthority;
-    this.notes            = notes;
+    this.studentId = studentId; this.docType = docType;
+    this.issueDate = issueDate; this.expiryDate = expiryDate;
+    this.issuingAuthority = issuingAuthority; this.notes = notes;
   }
 
-  // DB Methods
   public void save() throws SQLException {
-    String sql = "INSERT INTO Document (student_id, doc_type, issue_date, expiry_date, issuing_authority, notes) " +
-        "VALUES (?,?,?,?,?,?)";
-    PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
-    ps.setInt(1, studentId);
-    ps.setString(2, docType);
-    ps.setDate(3, Date.valueOf(issueDate));
-    ps.setDate(4, Date.valueOf(expiryDate));
-    ps.setString(5, issuingAuthority);
-    ps.setString(6, notes);
+    PreparedStatement ps = DBConnection.getConnection().prepareStatement(
+        "INSERT INTO Document (student_id,doc_type,issue_date,expiry_date,issuing_authority,notes) VALUES (?,?,?,?,?,?)");
+    ps.setInt(1,studentId); ps.setString(2,docType);
+    ps.setDate(3,Date.valueOf(issueDate)); ps.setDate(4,Date.valueOf(expiryDate));
+    ps.setString(5,issuingAuthority); ps.setString(6,notes);
     ps.executeUpdate();
   }
 
   public static List<Document> getAll(int studentId) throws SQLException {
     List<Document> list = new ArrayList<>();
-    String sql = "SELECT *, days_until_expiry(expiry_date) AS days_left FROM Document WHERE student_id=?";
-    PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
+    PreparedStatement ps = DBConnection.getConnection().prepareStatement(
+        "SELECT * FROM Document WHERE student_id=?");
     ps.setInt(1, studentId);
     ResultSet rs = ps.executeQuery();
     while (rs.next()) {
       Document d = new Document(
-          rs.getInt("student_id"),
-          rs.getString("doc_type"),
+          rs.getInt("student_id"), rs.getString("doc_type"),
           rs.getDate("issue_date").toLocalDate(),
           rs.getDate("expiry_date").toLocalDate(),
-          rs.getString("issuing_authority"),
-          rs.getString("notes")
-      );
+          rs.getString("issuing_authority"), rs.getString("notes"));
       d.documentId = rs.getInt("document_id");
       list.add(d);
     }
@@ -64,26 +53,19 @@ public class Document {
   }
 
   public void update() throws SQLException {
-    String sql = "UPDATE Document SET doc_type=?, issue_date=?, expiry_date=?, " +
-        "issuing_authority=?, notes=? WHERE document_id=?";
-    PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
-    ps.setString(1, docType);
-    ps.setDate(2, Date.valueOf(issueDate));
-    ps.setDate(3, Date.valueOf(expiryDate));
-    ps.setString(4, issuingAuthority);
-    ps.setString(5, notes);
-    ps.setInt(6, documentId);
-    ps.executeUpdate();
+    PreparedStatement ps = DBConnection.getConnection().prepareStatement(
+        "UPDATE Document SET doc_type=?,issue_date=?,expiry_date=?,issuing_authority=?,notes=? WHERE document_id=?");
+    ps.setString(1,docType); ps.setDate(2,Date.valueOf(issueDate));
+    ps.setDate(3,Date.valueOf(expiryDate)); ps.setString(4,issuingAuthority);
+    ps.setString(5,notes); ps.setInt(6,documentId); ps.executeUpdate();
   }
 
   public void delete() throws SQLException {
-    String sql = "DELETE FROM Document WHERE document_id=?";
-    PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
-    ps.setInt(1, documentId);
-    ps.executeUpdate();
+    PreparedStatement ps = DBConnection.getConnection().prepareStatement(
+        "DELETE FROM Document WHERE document_id=?");
+    ps.setInt(1,documentId); ps.executeUpdate();
   }
 
-  // Getters & Setters
   public int getDocumentId()          { return documentId; }
   public int getStudentId()           { return studentId; }
   public String getDocType()          { return docType; }
@@ -97,11 +79,3 @@ public class Document {
   public void setIssuingAuthority(String v) { issuingAuthority = v; }
   public void setNotes(String v)            { notes = v; }
 }
-
-// NOTE: All other model classes (Deadline, JobApplication, Expense,
-// Housing, Course, HealthRecord, Contact, Recruiter) follow the
-// EXACT same pattern as Document.java above:
-//   - Fields matching the DB columns
-//   - Constructor
-//   - save(), getAll(studentId), update(), delete()
-//   - Getters and Setters

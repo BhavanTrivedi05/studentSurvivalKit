@@ -6,122 +6,104 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class StudentProfilePanel extends JFrame {
+  private final StudentController ctrl;
+  private final JTextField    email    = new JTextField(20);
+  private final JTextField    first    = new JTextField(20);
+  private final JTextField    last     = new JTextField(20);
+  private final JTextField    nat      = new JTextField(20);
+  private final JTextField    country  = new JTextField(20);
+  private final JTextField    program  = new JTextField(20);
+  private final JTextField    visa     = new JTextField(20);
+  private final JTextField    gradYear = new JTextField(20);
+  private final JPasswordField pass    = new JPasswordField(20);
+  private final JPasswordField confirm = new JPasswordField(20);
 
-  private StudentController controller;
-
-  private JTextField emailField       = new JTextField();
-  private JTextField firstNameField   = new JTextField();
-  private JTextField lastNameField    = new JTextField();
-  private JTextField nationalityField = new JTextField();
-  private JTextField countryField     = new JTextField();
-  private JTextField programField     = new JTextField();
-  private JTextField visaField        = new JTextField();
-  private JTextField gradYearField    = new JTextField();
-
-  public StudentProfilePanel(StudentController controller) {
-    this.controller = controller;
-    setTitle("StudentSurvivalKit — Create Profile");
-    setSize(480, 580);
+  public StudentProfilePanel(StudentController ctrl) {
+    this.ctrl = ctrl;
+    setTitle("StudentSurvivalKit — Create Account");
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setResizable(false);
+    setContentPane(build());
+    pack();
     setLocationRelativeTo(null);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    setContentPane(buildPanel());
   }
 
-  private JPanel buildPanel() {
-    JPanel panel = new JPanel();
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.setBackground(Color.WHITE);
-    panel.setBorder(new EmptyBorder(32, 40, 32, 40));
+  private JPanel build() {
+    JPanel outer = new JPanel(new BorderLayout());
+    outer.setBackground(Color.WHITE);
 
-    JLabel title = new JLabel("Create Your Profile");
-    title.setFont(new Font("SansSerif", Font.BOLD, 22));
-    title.setForeground(new Color(30, 42, 58));
-    title.setAlignmentX(Component.CENTER_ALIGNMENT);
+    JPanel header = new JPanel();
+    header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+    header.setBackground(new Color(30, 42, 58));
+    header.setBorder(new EmptyBorder(28, 48, 22, 48));
+    JLabel t = new JLabel("Create Your Account");
+    t.setFont(new Font("SansSerif", Font.BOLD, 22));
+    t.setForeground(Color.WHITE);
+    t.setAlignmentX(Component.CENTER_ALIGNMENT);
+    header.add(t);
 
-    JLabel subtitle = new JLabel("Set up your StudentSurvivalKit account");
-    subtitle.setFont(new Font("SansSerif", Font.PLAIN, 13));
-    subtitle.setForeground(new Color(120, 130, 150));
-    subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+    JPanel form = new JPanel(new GridBagLayout());
+    form.setBackground(Color.WHITE);
+    form.setBorder(new EmptyBorder(20, 48, 8, 48));
 
-    panel.add(title);
-    panel.add(Box.createVerticalStrut(4));
-    panel.add(subtitle);
-    panel.add(Box.createVerticalStrut(24));
+    GridBagConstraints lc = new GridBagConstraints();
+    lc.gridx = 0; lc.anchor = GridBagConstraints.WEST;
+    lc.insets = new Insets(8, 0, 2, 16);
+    GridBagConstraints fc = new GridBagConstraints();
+    fc.gridx = 1; fc.fill = GridBagConstraints.HORIZONTAL;
+    fc.weightx = 1.0; fc.insets = new Insets(8, 0, 2, 0);
 
-    panel.add(makeRow("Email",               emailField));
-    panel.add(makeRow("First Name",          firstNameField));
-    panel.add(makeRow("Last Name",           lastNameField));
-    panel.add(makeRow("Nationality",         nationalityField));
-    panel.add(makeRow("Home Country",        countryField));
-    panel.add(makeRow("Program",             programField));
-    panel.add(makeRow("Visa Type (e.g. F-1)",visaField));
-    panel.add(makeRow("Graduation Year",     gradYearField));
-    panel.add(Box.createVerticalStrut(20));
+    String[] labels = {"Email","First Name","Last Name","Nationality","Home Country","Program","Visa Type (e.g. F-1)","Graduation Year","Password","Confirm Password"};
+    JTextField[] fields = {email,first,last,nat,country,program,visa,gradYear,pass,confirm};
 
-    JButton saveBtn = new JButton("Save & Continue");
-    saveBtn.setBackground(new Color(37, 99, 235));
-    saveBtn.setForeground(Color.WHITE);
-    saveBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
-    saveBtn.setFocusPainted(false);
-    saveBtn.setBorderPainted(false);
-    saveBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
-    saveBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    saveBtn.addActionListener(e -> onSave());
-    panel.add(saveBtn);
+    for (int i = 0; i < labels.length; i++) {
+      lc.gridy = fc.gridy = i;
+      JLabel lbl = new JLabel(labels[i]);
+      lbl.setFont(new Font("SansSerif", Font.PLAIN, 12));
+      lbl.setForeground(new Color(80, 90, 110));
+      form.add(lbl, lc);
+      fields[i].setFont(new Font("SansSerif", Font.PLAIN, 13));
+      fields[i].setPreferredSize(new Dimension(260, 34));
+      fields[i].setBorder(BorderFactory.createCompoundBorder(
+          BorderFactory.createLineBorder(new Color(210, 215, 225), 1, true),
+          BorderFactory.createEmptyBorder(4, 10, 4, 10)));
+      form.add(fields[i], fc);
+    }
 
-    return panel;
-  }
+    JPanel btnPanel = new JPanel(new BorderLayout());
+    btnPanel.setBackground(Color.WHITE);
+    btnPanel.setBorder(new EmptyBorder(16, 48, 28, 48));
+    JButton save = new JButton("Create Account");
+    save.setBackground(new Color(37, 99, 235)); save.setForeground(Color.WHITE);
+    save.setOpaque(true); save.setContentAreaFilled(true);
+    save.setBorderPainted(false); save.setFocusPainted(false);
+    save.setFont(new Font("SansSerif", Font.BOLD, 14));
+    save.setPreferredSize(new Dimension(400, 42));
+    save.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    save.addActionListener(e -> onSave());
+    btnPanel.add(save, BorderLayout.CENTER);
 
-  private JPanel makeRow(String label, JTextField field) {
-    JPanel row = new JPanel();
-    row.setLayout(new BoxLayout(row, BoxLayout.Y_AXIS));
-    row.setOpaque(false);
-    row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
-
-    JLabel lbl = new JLabel(label);
-    lbl.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    lbl.setForeground(new Color(80, 90, 110));
-
-    field.setFont(new Font("SansSerif", Font.PLAIN, 13));
-    field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
-    field.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(new Color(210, 215, 225), 1, true),
-        BorderFactory.createEmptyBorder(4, 10, 4, 10)
-    ));
-
-    row.add(lbl);
-    row.add(Box.createVerticalStrut(3));
-    row.add(field);
-    row.add(Box.createVerticalStrut(10));
-    return row;
+    outer.add(header,   BorderLayout.NORTH);
+    outer.add(form,     BorderLayout.CENTER);
+    outer.add(btnPanel, BorderLayout.SOUTH);
+    return outer;
   }
 
   private void onSave() {
+    String p = new String(pass.getPassword()).trim();
+    String c = new String(confirm.getPassword()).trim();
+    if (p.isEmpty()) { err("Password is required."); return; }
+    if (!p.equals(c)) { err("Passwords do not match."); return; }
     try {
-      int gradYear = Integer.parseInt(gradYearField.getText().trim());
-      boolean success = controller.saveProfile(
-          emailField.getText().trim(),
-          firstNameField.getText().trim(),
-          lastNameField.getText().trim(),
-          nationalityField.getText().trim(),
-          countryField.getText().trim(),
-          programField.getText().trim(),
-          visaField.getText().trim(),
-          gradYear
-      );
-      if (success) {
+      int yr = Integer.parseInt(gradYear.getText().trim());
+      if (ctrl.saveProfile(email.getText().trim(), first.getText().trim(),
+          last.getText().trim(), nat.getText().trim(), country.getText().trim(),
+          program.getText().trim(), visa.getText().trim(), yr, p)) {
         dispose();
-        int id = controller.getStudent().getStudentId();
-        new MainDashboard(id, firstNameField.getText().trim()).setVisible(true);
-      } else {
-        JOptionPane.showMessageDialog(this,
-            "Could not save profile. Check all fields.",
-            "Error", JOptionPane.ERROR_MESSAGE);
-      }
-    } catch (NumberFormatException e) {
-      JOptionPane.showMessageDialog(this,
-          "Graduation year must be a number (e.g. 2027).",
-          "Invalid Input", JOptionPane.ERROR_MESSAGE);
-    }
+        new MainDashboard(ctrl.getStudent().getStudentId(), first.getText().trim()).setVisible(true);
+      } else err("Could not create account. Email may already be registered.");
+    } catch (NumberFormatException x) { err("Graduation year must be a number (e.g. 2027)."); }
   }
+
+  private void err(String m) { JOptionPane.showMessageDialog(this, m, "Error", JOptionPane.ERROR_MESSAGE); }
 }
