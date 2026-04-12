@@ -69,7 +69,9 @@ public class HealthRecordFormDialog extends BaseFormDialog {
     confirmed = true; dispose();
   }
 
-  public String    getType()        { return type; }
+
+  // AFTER:
+  public String getRecordType() { return type; }
   public String    getProvider()    { return provider; }
   public LocalDate getVisitDate()   { return visitDate; }
   public LocalDate getNextDue()     { return nextDue; }

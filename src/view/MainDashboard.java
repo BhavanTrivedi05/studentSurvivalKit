@@ -1,5 +1,6 @@
 package view;
 
+import controller.DashboardController;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -149,7 +150,7 @@ public class MainDashboard extends JFrame {
     cardLayout.show(contentPanel, name);
   }
 
-  // ── Dashboard Home ─────────────────────────────────────
+  // ── Replace buildDashboardHome() ────────────────────────
   private JPanel buildDashboardHome() {
     JPanel panel = new JPanel(new BorderLayout());
     panel.setBackground(new Color(245, 246, 250));
@@ -175,15 +176,23 @@ public class MainDashboard extends JFrame {
     return panel;
   }
 
+  // ── Replace buildSummaryCards() ─────────────────────────
   private JPanel buildSummaryCards() {
+    DashboardController dc = new DashboardController(studentId);
+
+    int  expiringDocs = dc.getExpiringDocCount();
+    int  deadlines    = dc.getDeadlinesThisWeek();
+    int  jobApps      = dc.getTotalJobApplications();
+    double expenses   = dc.getMonthlyExpenses();
+
     JPanel cards = new JPanel(new GridLayout(1, 4, 16, 0));
     cards.setOpaque(false);
     cards.setBorder(BorderFactory.createEmptyBorder(32, 0, 0, 0));
 
-    cards.add(buildCard("Documents Expiring", "—", new Color(220, 38, 38)));
-    cards.add(buildCard("Deadlines This Week", "—", new Color(234, 88, 12)));
-    cards.add(buildCard("Job Applications",    "—", new Color(37, 99, 235)));
-    cards.add(buildCard("Monthly Expenses",    "—", new Color(22, 163, 74)));
+    cards.add(buildCard("Documents Expiring (30d)", String.valueOf(expiringDocs), new Color(220, 38, 38)));
+    cards.add(buildCard("Deadlines This Week",      String.valueOf(deadlines),    new Color(234, 88, 12)));
+    cards.add(buildCard("Job Applications",         String.valueOf(jobApps),      new Color(37, 99, 235)));
+    cards.add(buildCard("Monthly Expenses ($)",     String.format("%.0f", expenses), new Color(22, 163, 74)));
 
     return cards;
   }

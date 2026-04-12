@@ -68,7 +68,8 @@ public class JobApplicationFormDialog extends BaseFormDialog {
 
   public String    getCompany()     { return company; }
   public String    getRole()        { return role; }
-  public String    getLocation()    { return location; }
+  // AFTER:
+  public String getJobLocation() { return location; }
   public LocalDate getAppliedDate() { return appliedDate; }
   public String    getStatus()      { return status; }
   public String    getJobType()     { return jobType; }
